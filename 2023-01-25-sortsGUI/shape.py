@@ -1,0 +1,1 @@
+# Class shape for all figures - Rodin Ilya - 08.02.2023
