@@ -23,8 +23,11 @@ class Window(tk.Tk):
                      MovePoint(c, (100, 400)))
         circle1 = Circle(c, MovePoint(c, (300, 100)),
                      MovePoint(c, (200, 400)))
+        circle2 = Circle(c, MovePoint(c, (400, 500)),
+                     MovePoint(c, (600, 700)))
         inter1 = Intersection(c, line1, line2)
         inter2 = Intersection(c, circle1, line1)
+        inter3 = Intersection(c, circle1, circle2)
         c.tag_raise("point")
 
 
