@@ -30,6 +30,33 @@ def contrast(im, val):
             dst[x, y] = tuple(color)
     return res
 
+def blur(im, k):
+    pixels = im.load()
+    w = im.width
+    h = im.height
+    res = Image.new('RGB', (w, h), (0, 0, 0))
+    dst = res.load()
+    for i in range(w):
+        for j in range(h):
+            color = [0] * 3
+            for l in range(3):
+                color[l] = int((pixels[(i + 1) % w, (j - 1) % h][l] +
+                                pixels[(i - 1) % w, (j + 1) % h][l] +
+                                pixels[(i - 1) % w, (j - 1) % h][l] +
+                                pixels[(i - 1) % w, j][l] +
+                                pixels[(i + 1) % w, j][l] +
+                                pixels[i, j][l] +
+                                pixels[(i + 1) % w, (j + 1) % h][l] +
+                                pixels[i, (j + 1) % h][l] +
+                                pixels[i, (j - 1) % h][l]) / 9)
+            dst[i, j] = tuple(color)
+    k -= 1
+    print(type(res))
+    if k == 0:
+        res.save("blr0.bmp")
+        return res
+    blur(res, k)
+
 def brighthes(im, a):
     w = im.width
     h = im.height
@@ -65,22 +92,17 @@ def rotate(im, angle):
     return res
 
 def scale(im, k):
-    w1 = im.width
-    h1 = im.height
-    w2 = round(w1 * k)
-    h2 = round(h1 * k)
+    w = im.width
+    h = im.height
     pixels = im.load()
-    res = Image.new('RGB', (w2, h2), (0, 0, 0))
+    x, y = (int(w / k), int(h / k))
+    x1 = x / (w - 1)
+    y1 = y / (h - 1)
+    res = Image.new('RGB', (w, h), (0, 0, 0))
     dst = res.load()
-    for y in range(h2):
-        for x in range(w2):
-            color = [0] * 3
-            x1 = round(x * k)
-            y1 = round(y * k)
-            if 0 <= x1 < w2 and 0 <= y1 < h2:
-                for c in range(3):
-                    color[c] = pixels[x1, y1][c]
-            dst[x1, y1] = tuple(color)
+    for i in range(x - 1):
+        for j in range(y - 1):
+            dst[i + 1, j + 1]= pixels[1 + int(i / x1), 1 + int(j / y1)]
     return res
 
 if __name__ == '__main__':
@@ -104,5 +126,7 @@ if __name__ == '__main__':
     #rot.save("rot.bmp")
     scl = scale(im, 5)
     scl.save("scl.bmp")
+    blr = blur(im, 10)
+    #blr.save("blr.bmp")
     
     im.close()
