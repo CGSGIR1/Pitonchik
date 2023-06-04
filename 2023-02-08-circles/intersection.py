@@ -66,12 +66,8 @@ class Intersection(Shape):
         toch2  = line2.p0
         B1 = line1.p1
         B2 = line2.p1
-        normal1 = (toch1 - B1).left()
-        normal2 = (toch2 - B2).left()
-        toch3 = normal1.left() + toch1
-        toch4 = normal2.left() + toch2
-        k = toch1 - toch3
-        m = toch2 - toch4
+        k = B1 - toch1 
+        m = B2 - toch2
         t1, t2 = (toch2 - toch1).to_base(k, m)
         fin = toch1 + k * t2
         self._points.append(Point(self._c, (fin.x, fin.y), "blue"))

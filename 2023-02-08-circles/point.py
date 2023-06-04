@@ -16,6 +16,15 @@ class Point(Vec, Shape):
         r = self.POINT_R
         self._c.coords(self._id, x - r, y - r, x + r, y + r)
 
+    def deletePoint(self):
+        for d in self._depended:
+            self._c.delete(d._id)
+        self._c.delete(self._id)
+
+    def deleteLine(self):
+        for d in self._depended:
+            self._c.delete(d._id)
+
 
 class MovePoint(Point):
     def __init__(self, canvas, coords):

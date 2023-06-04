@@ -1,5 +1,5 @@
 from shape import Shape
-
+import math
 
 class Line(Shape):
     def __init__(self, canvas, A, B, colorl="black"):

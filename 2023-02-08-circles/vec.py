@@ -37,6 +37,9 @@ class Vec:
     def len1(self):
         return self.len2() ** 0.5
 
+    def lenTwoPoints(self, P0):
+        return (self - P0).len1()
+
     # Полярный угол (угол к оси OX) в диапазоне (-pi, pi]
     def angle(self):
         if math.atan2(self.y, self.x) < 0:
