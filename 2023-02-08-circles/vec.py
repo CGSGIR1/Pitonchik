@@ -64,13 +64,6 @@ class Vec:
     def Dir(self):
         return self * (1 / self.len1())
 
-    def bis(self, v2, x):
-        a = self.Dir()
-        b = v2.Dir()
-        c = a + b
-        norm = c.right()
-        return Line(x, norm).coof()
-
     def __mod__(self, other):
         if self.len1() == 0 or other.len1() == 0:
             return 0
@@ -80,15 +73,3 @@ class Vec:
     def to_base(self, v, u):
         cp = u % v
         return round((self % v) / cp, 9), round(u % self / cp, 9)
-
-    def is_point(a, b, c, d):
-        cp1 = (b - a) % (c - a)
-        cp2 = (b - a) % (d - a)
-        cp3 = (d - c) % (a - c)
-        cp4 = (d - c) % (b - c)
-        if cp1 == 0 and cp2 == 0 and cp1 == 0 and cp2 == 0:
-            g = (c - b).angle1(d - b)
-            o = (c - a).angle1(d - a)
-            return g + o == math.pi
-        else:
-            return sign(cp1) * sign(cp2) <= 0

@@ -1,6 +1,7 @@
 from shape import Shape
 import math
 
+EPS = 1e-9
 class Line(Shape):
     def __init__(self, canvas, A, B, colorl="black", tag="l"):
         super().__init__(canvas)
