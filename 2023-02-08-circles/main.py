@@ -1,6 +1,6 @@
-import random
 import keyboard
 import math
+import random
 import tkinter as tk
 import time
 import tkinter.ttk as ttk
@@ -9,8 +9,10 @@ from vec import Vec
 from point import MovePoint
 from line import Line
 from pointsSort import quick_sort_point
+from triangle import Triangle
 from circle import Circle
 from intersection import Intersection
+
 
 def point_side(line_start, line_end, point):
     line_vec = line_end - line_start
@@ -44,12 +46,33 @@ def newAngle(line_start, line_end, point):
     if a == 0:
         a = 10 ** 10
     cos_angle = dot_product / a
-    angle_rad = math.acos(cos_angle)
+    if cos_angle - 1 < (10 ** -8):
+        cos_angle -= 0.0000001
+    if cos_angle + 1 < -(10 ** -8):
+        cos_angle += 0.0000001
+    try:
+        angle_rad = math.acos(cos_angle)
+    except:
+        print("kapez")
+        print(cos_angle)
+        return
     angle_deg = math.degrees(angle_rad)
     return angle_deg
 
+
+def rgb_hack(rgb):
+    return "#%02x%02x%02x" % rgb
+
+def ClearTriangl():
+    global points
+    print(":(")
+    for i in range(len(points)):
+        points[i].deleteLine()
+
 def _Triangularion(Points):
-    global c
+    global c, polyghons
+    if (len(Points) < 2):
+        return
     # сортируем точки по координате x
     quick_sort_point(Points)
     print(len(Points))
@@ -76,6 +99,9 @@ def _Triangularion(Points):
     else:
         for i in range(len(Points)):
             newPoints.append(Points[i])
+    if (len(newPoints) < 2):
+        return
+    ClearTriangl()
 
     # ищем самую левую нижнию точку
     lenPoints = len(newPoints)
@@ -113,11 +139,12 @@ def _Triangularion(Points):
 
     ActiveEdges = [[P0, P1]]
     itogEdges = [[P0, P1]]
-    ActiveLines = [Line(c, newPoints[P0], newPoints[P1], "red")]
-    SleepLines = []
+    triangles = []
+    # ActiveLines = [Line(c, newPoints[P0], newPoints[P1], "red")]
+    # SleepLines = []
     print(ActiveEdges.count([P0, P1]))
     while len(ActiveEdges) != 0:
-        time.sleep(0.1)
+        # time.sleep(0.1)
         n = len(ActiveEdges) - 1
         angle = 0
         anglem = 0
@@ -128,7 +155,7 @@ def _Triangularion(Points):
         for i in range(lenPoints):
             if i == ActiveEdges[n][0] or i == ActiveEdges[n][1]:
                 continue
-            print(P0, P1, i)
+            # print(P0, P1, i)
             angle2 = newAngle(newPoints[P0], newPoints[P1], newPoints[i])
             if point_side(newPoints[P0], newPoints[P1], newPoints[i]):
                 if angle2 > angle:
@@ -139,40 +166,60 @@ def _Triangularion(Points):
                     P3 = i
                     anglem = angle2
         ActiveEdges.pop()
-        del ActiveLines[-1]
-        SleepLines.append(Line(c, newPoints[P0], newPoints[P1], "black"))
+        # del ActiveLines[-1]
+        # SleepLines.append(Line(c, newPoints[P0], newPoints[P1], "black"))
         if P2 != None:
+            triangles.append([P0, P1, P2])
             if itogEdges.count([P0, P2]) == 0 and itogEdges.count([P2, P0]) == 0:
                 ActiveEdges.append([P2, P0])
-                ActiveLines.append(Line(c, newPoints[P2], newPoints[P0], "red"))
+                # ActiveLines.append(Line(c, newPoints[P2], newPoints[P0], "red"))
                 itogEdges.append([P2, P0])
             if itogEdges.count([P1, P2]) == 0 and itogEdges.count([P2, P1]) == 0:
                 ActiveEdges.append([P2, P1])
                 itogEdges.append([P2, P1])
-                ActiveLines.append(Line(c, newPoints[P2], newPoints[P1], "red"))
+                # ActiveLines.append(Line(c, newPoints[P2], newPoints[P1], "red"))
         if P3 != None and P2 != P3:
+            triangles.append([P0, P1, P3])
             if itogEdges.count([P0, P3]) == 0 and itogEdges.count([P3, P0]) == 0:
                 ActiveEdges.append([P3, P0])
                 itogEdges.append([P3, P0])
-                ActiveLines.append(Line(c, newPoints[P3], newPoints[P0], "red"))
+                # ActiveLines.append(Line(c, newPoints[P3], newPoints[P0], "red"))
             if itogEdges.count([P1, P3]) == 0 and itogEdges.count([P3, P1]) == 0:
                 ActiveEdges.append([P3, P1])
                 itogEdges.append([P3, P1])
-                ActiveLines.append(Line(c, newPoints[P3], newPoints[P1], "red"))
+                # ActiveLines.append(Line(c, newPoints[P3], newPoints[P1], "red"))
+    for i in triangles:
+        i.sort()
+    temp = []
+    print(len(triangles))
+    for x in triangles:
+        if x not in temp: temp.append(x)
+    triangles = temp
+    print(len(triangles))
+    colors = ["yellow", "blue", "gray", "green", "brown", "red", "orange", "purple", "pink"]
+    for i in range(len(triangles)):
+        r = random.randint(0, 255)
+        g = random.randint(0, 255)
+        b = random.randint(0, 255)
+        polyghons.append(Triangle(c, newPoints[triangles[i][0]], newPoints[triangles[i][1]], newPoints[triangles[i][2]],
+                                  color=rgb_hack((r, g, b))))
+    # triangles1 = set(triangles)
+    # print(triangles1)
+    c.tag_lower("t")
+    # c.tag_raise("l")
 
 
 def Triangularion():
     global points
-    _Triangularion(points)
+    _Triangularion(list(points))
+
+
 def addPoint(ev):
     global c, flag, points
     if flag == True:
         k = MovePoint(c, (ev.x, ev.y))
         points.append(k)
-        if (len(points) > 1):
-            for i in range(len(points) - 1):
-                pass
-                #Line(c, points[i], k)
+
 
 def FlagPoint():
     global flag, points
@@ -181,22 +228,60 @@ def FlagPoint():
     else:
         flag = True
 
+
 def DeletePoints():
     global points
-    if (len(points) > 1):
+    if (len(points) > 0):
         points[-1].deletePoint()
         points.pop()
 
-def ClearTriangl():
+
+def ClearPoints():
     global points
-    print(":(")
-    for i in range(len(points)):
-        points[i].deleteLine()
+    while (len(points) > 0):
+        DeletePoints()
+
+
+def RandomPoints(win):
+    global c, points, flag
+    if (flag):
+        win.update_idletasks()
+        s = win.geometry()
+        s = s.split('+')
+        s = s[0].split('x')
+        width_root = int(s[0])
+        height_root = int(s[1])
+        for i in range(10, width_root - 20, 40):
+            for j in range(10, height_root - 20, 40):
+                k = MovePoint(c, (i, j))
+                points.append(k)
+    else:
+        win.update_idletasks()
+        s = win.geometry()
+        s = s.split('+')
+        s = s[0].split('x')
+        width_root = int(s[0])
+        height_root = int(s[1])
+        lenp = len(points)
+        while (len(points) <= lenp + 100):
+            k = MovePoint(c, (random.randint(5, width_root - 10), random.randint(5, height_root - 10)))
+            points.append(k)
+
+
+def painting(ev):
+    global c, polyghons
+    tag = c.find_closest(ev.x, ev.y)
+    c.itemconfig(tag, fill='red')
+    # for i in range(len(polyghons)):
+    #    if polyghons[i]._id == tag:
+    #        pass
+
 
 class Window(tk.Tk):
     def __init__(self, *args, **kwargs):
-        global c, points
+        global c, points, polyghons
         points = []
+        polyghons = []
         super().__init__(*args, **kwargs)
         self.title("Geometry visalustion")
         self.geometry("1000x800")
@@ -208,23 +293,27 @@ class Window(tk.Tk):
         keyboard.add_hotkey("d", DeletePoints)
         keyboard.add_hotkey("t", Triangularion)
         keyboard.add_hotkey("c", ClearTriangl)
-        c.bind("<Button-1>", addPoint)
+        keyboard.add_hotkey("p", ClearPoints)
+        keyboard.add_hotkey("r", lambda x=self: RandomPoints(x))
+        c.bind("<Button-3>", addPoint)
+        c.bind("<Button-1>", painting)
         # p0 = Point(c, (100, 200))
-        #line1 = Line(c, MovePoint(c, (100, 200)),
+        # line1 = Line(c, MovePoint(c, (100, 200)),
         #             MovePoint(c, (800, 600)))
-        #line2 = Line(c, MovePoint(c, (500, 100)),
+        # line2 = Line(c, MovePoint(c, (500, 100)),
         #             MovePoint(c, (100, 400)))
-        #circle1 = Circle(c, MovePoint(c, (300, 100)),
+        # circle1 = Circle(c, MovePoint(c, (300, 100)),
         #                 MovePoint(c, (200, 400)))
-        #circle2 = Circle(c, MovePoint(c, (400, 500)),
+        # circle2 = Circle(c, MovePoint(c, (400, 500)),
         #                 MovePoint(c, (600, 700)))
-        #inter1 = Intersection(c, line1, line2)
-        #inter2 = Intersection(c, circle1, line1)
-        #inter3 = Intersection(c, circle1, circle2)
+        # inter1 = Intersection(c, line1, line2)
+        # inter2 = Intersection(c, circle1, line1)
+        # inter3 = Intersection(c, circle1, circle2)
         c.tag_raise("point")
+
 
 if __name__ == '__main__':
     global flag
-    flag = True
+    flag = False
     win = Window()
     win.mainloop()

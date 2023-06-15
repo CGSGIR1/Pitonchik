@@ -2,14 +2,14 @@ from shape import Shape
 import math
 
 class Line(Shape):
-    def __init__(self, canvas, A, B, colorl="black"):
+    def __init__(self, canvas, A, B, colorl="black", tag="l"):
         super().__init__(canvas)
         self.p0 = A
         self.p1 = B
         for p in A, B:
             p.add_dependency(self)
 
-        self._id = self._c.create_line(0, 0, 0, 0, fill=colorl, width=2)
+        self._id = self._c.create_line(0, 0, 0, 0, fill=colorl, width=2, tags=tag)
         self.redraw()
         
      # line = Line.from_abc(a, b, c)
