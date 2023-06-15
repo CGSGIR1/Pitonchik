@@ -117,5 +117,5 @@ if __name__ == '__main__':
     b = text.read_vec()
     d = Line.from_points(a, b)
     with open("angle1.out", "wt") as wrote:
-        
+        print("oke")
         
