@@ -14,10 +14,6 @@ class Line(Shape):
         self.redraw()
         
      # line = Line.from_abc(a, b, c)
-    def from_abc(a, b, c):
-        normal = Vec(a, b)
-        p0 = normal * (-c / normal.len2())
-        return Line(p0, normal)
 
     # line = Line.from_points(A, B)
     def from_points(A, B):
